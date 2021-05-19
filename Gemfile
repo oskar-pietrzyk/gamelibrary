@@ -10,7 +10,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'pry', '~> 0.13.1']
+  gem 'pry', '~> 0.13.1'
   gem 'rubocop'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
@@ -23,7 +23,7 @@ group :development do
   gem 'spring'
 end
 
-gem :test do
+group :test do
   gem 'rspec-rails', '~> 5.0.0'
   gem 'shoulda-matchers', '~> 4.0'
   gem 'database_cleaner', '~> 2.0', '>= 2.0.1'
