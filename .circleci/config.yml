@@ -55,7 +55,7 @@ jobs:
           at: ~/repo
       - run:
           name: Bundle config
-          command: gem install bundler | bundle install --deployment --path vendor/bundle
+          command: bundle update --bundler | bundle install --deployment --path vendor/bundle
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
