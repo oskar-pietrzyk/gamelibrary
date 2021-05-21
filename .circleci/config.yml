@@ -54,6 +54,9 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Bundle config
+          command: gem install bundler:2.2.9
+      - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
