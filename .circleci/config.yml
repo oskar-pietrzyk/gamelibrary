@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/ruby:2.5.8-stretch-node # see also run_rspec section
+    - image: circleci/ruby:2.6.6-stretch-node # see also run_rspec section
 
 version: 2.1
 
@@ -39,7 +39,7 @@ jobs:
   run_rspec:
     <<: *defaults
     docker:
-      - image: circleci/ruby:2.5.8-stretch-node
+      - image: circleci/ruby:2.6.6-stretch-node
         environment:
           - DATABASE_USERNAME: gamelibrary
           - DATABASE_HOST: 127.0.0.1
