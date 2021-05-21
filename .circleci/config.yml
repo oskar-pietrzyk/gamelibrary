@@ -54,6 +54,9 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Bundle config
+          command: gem install bundler | bundle install --deployment --path vendor/bundle
+      - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
@@ -136,7 +139,6 @@ workflows:
             - bundle_ruby
       - run_rspec:
           requires:
-            - run bundle_ruby
             - run_bundle_audit
             - run_bundle_brakeman
             - run_rubocop
