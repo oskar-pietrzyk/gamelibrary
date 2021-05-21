@@ -1,4 +1,10 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/ruby:2.5.8-stretch-node # see also run_rspec section
+
 version: 2.1
+
 orbs:
   ruby: circleci/ruby@0.1.2 
 
@@ -30,22 +36,6 @@ jobs:
           paths:
             - vendor/bundle
 
-  bundle_deployment_ruby:
-    <<: *defaults
-    working_directory: ~/repo/deployment
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: sudo apt-get update && sudo apt-get install qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x --force-yes
-      - run: gem install bundler
-      - restore_cache:
-          key: deployment-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle install --deployment --path ~/repo/deployment/vendor/bundle
-      - save_cache:
-          key: deployment-gems-{{ checksum "Gemfile.lock" }}
-          paths:
-            - ~/repo/deployment/vendor/bundle
-
   run_rspec:
     <<: *defaults
     docker:
@@ -62,18 +52,13 @@ jobs:
     parallelism: 5
     steps:
       - attach_workspace:
+          at: ~/repo
       - run:
           name: Bundle config
           command: bundle config --local path ~/repo/vendor/bundle
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run:
-          name: Setup test-reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 \
-              > ./tmp/cc-test-reporter
-            chmod +x ./tmp/cc-test-reporter
       - run:
           name: Create DB
           command: RAILS_ENV=test bundle exec rake db:create db:schema:load db:migrate db:seed --trace
@@ -87,6 +72,11 @@ jobs:
                                --format RspecJunitFormatter \
                                --out tmp/test_results/rspec/results.xml \
                                $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - tmp/test_results
+            - tmp/cc-test-reporter
 
   run_bundle_audit:
     <<: *defaults
@@ -138,12 +128,6 @@ workflows:
       - bundle_ruby:
           requires:
             - checkout_code
-      - bundle_deployment_ruby:
-          requires:
-            - checkout_code
-          filters:
-            branches:
-              only: master
       - run_bundle_audit:
           requires:
             - bundle_ruby
