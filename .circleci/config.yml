@@ -70,13 +70,11 @@ jobs:
       - run:
           name: Run RSpec tests
           command: |
-             ./tmp/cc-test-reporter before-build
-             COVERAGE=true \
-             bundle exec rspec --profile 5 \
-                               --format progress \
-                               --format RspecJunitFormatter \
-                               --out tmp/test_results/rspec/results.xml \
-                               $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            bundle exec rspec --profile 5 \
+                              --format progress \
+                              --format RspecJunitFormatter \
+                              --out tmp/test_results/rspec/results.xml \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings) 
       - persist_to_workspace:
           root: ~/repo
           paths:
