@@ -1,0 +1,83 @@
+require:
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'db/**/*'
+    - 'frontend/**/*'
+    - 'script/**/*'
+    - 'vendor/**/*'
+  Include:
+    - '**/*.rb'
+    - '**/*.rake'
+    - '**/Capfile'
+    - '**/Gemfile'
+    - '**/Rakefile'
+    - 'db/seeds.rb'
+  TargetRubyVersion: 2.5
+Metrics/BlockLength:
+  Enabled: false
+Layout/LineLength:
+  Max: 150
+  Exclude:
+    - 'config/**/*'
+    - 'spec/**/*'
+Metrics/ModuleLength:
+  Enabled: false
+Rails:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*'
+Style/ClassVars:
+  Exclude:
+    - 'spec/**/*'
+Style/Documentation:
+  Enabled: false
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*"
+Naming/MethodParameterName:
+  Exclude:
+    - 'spec/**/*'
+Metrics/ClassLength:
+  Max: 200
+Metrics/AbcSize:
+  Max: 26
+Metrics/CyclomaticComplexity:
+  Max: 10
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+    - staging
+    - local_prod
+RSpec/NamedSubject:
+  Enabled: false
+RSpec/NotToNot:
+  EnforcedStyle: to_not
+RSpec/LetSetup:
+  Enabled: false
+RSpec/ExampleLength:
+  Max: 25
+RSpec/NestedGroups:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Max: 7
+RSpec/ExpectChange:
+  EnforcedStyle: block
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/ContextWording:
+  Enabled: false
+RSpec/HookArgument:
+  EnforcedStyle: each
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/lib/tasks/**/*'

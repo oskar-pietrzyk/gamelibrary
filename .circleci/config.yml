@@ -1,0 +1,147 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/ruby:2.6.6-stretch-node # see also run_rspec section
+
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@0.1.2 
+
+jobs:
+  checkout_code:
+    <<: *defaults
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - .
+  bundle_ruby:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: sudo apt-get update && sudo apt-get install qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x --force-yes
+      - run: gem install bundler
+      - restore_cache:
+          key: gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle install --deployment --path vendor/bundle
+      - save_cache:
+          key: gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/repo/vendor/bundle
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - vendor/bundle
+
+  run_rspec:
+    <<: *defaults
+    docker:
+      - image: circleci/ruby:2.6.6-stretch-node
+        environment:
+          - DATABASE_USERNAME: gamelibrary_development
+          - DATABASE_HOST: 127.0.0.1
+      - image: circleci/postgres:9.6-alpine
+        environment:
+          - POSTGRES_USER: gamelibrary_development
+          - POSTGRES_DB: gamelibrary_test
+          - POSTGRES_PASSWORD: ""
+      - image: redis
+    parallelism: 4
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Bundle config
+          command: |
+            sudo gem update --system
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+            bundle install
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Create DB
+          command: RAILS_ENV=test bundle exec rake db:create db:schema:load db:migrate db:seed --trace
+      - run:
+          name: Run RSpec tests
+          command: |
+            bundle exec rspec --profile 5 \
+                              --format progress \
+                              --format RspecJunitFormatter \
+                              --out tmp/test_results/rspec/results.xml \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings) 
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - tmp/test_results
+            - tmp/cc-test-reporter
+
+  run_bundle_audit:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          key: gems-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install audit
+          command: gem install bundler-audit
+      - run:
+          name: Run bundle-audit
+          command: bundle-audit check --update --ignore CVE-2015-9284
+
+  run_bundle_brakeman:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          key: gems-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install brakeman
+          command: gem install brakeman
+      - run:
+          name: Run brakeman
+          command: brakeman
+
+  run_rubocop:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          key: gems-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install rubocop
+          command: gem install rubocop:0.93.1; gem install rubocop-rspec:1.44.1; gem install rubocop-rails:2.8.1
+      - run:
+          name: Run rubocop
+          command: rubocop
+
+workflows:
+  version: 2.1
+  build-and-deploy:
+    jobs:
+      - checkout_code
+      - bundle_ruby:
+          requires:
+            - checkout_code
+      - run_bundle_audit:
+          requires:
+            - bundle_ruby
+      - run_bundle_brakeman:
+          requires:
+            - bundle_ruby
+      - run_rubocop:
+          requires:
+            - bundle_ruby
+      - run_rspec:
+          requires:
+            - run_bundle_audit
+            - run_bundle_brakeman
+            - run_rubocop
