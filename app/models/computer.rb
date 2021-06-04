@@ -5,7 +5,6 @@ class Computer < ApplicationRecord
   belongs_to :computer_game, optional: true
 
   validates :name, presence: true
-  validates :computer_game, uniqueness: true
 
   before_create :generate_uuid
 
