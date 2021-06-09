@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 class ComputerSearchService < ApplicationService
-  # rubocop:disable Rails/MissingSuper
   def initialize(params, resource)
     @query = params[:query]
     @filter_by = params[:filter_by]
     @resource = resource[:resource].computers
   end
-  # rubocop:enable Rails/MissingSuper
 
   def call
     check_validation

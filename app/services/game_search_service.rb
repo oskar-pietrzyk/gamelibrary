@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 class GameSearchService < ApplicationService
-  # rubocop:disable Rails/MissingSuper
   def initialize(params, resource)
     @query = params[:query]
     @filter_by = params[:filter_by]
     @filter_range = params[:filter_range]
     @resource = resource[:resource].games
   end
-  # rubocop:enable Rails/MissingSuper
 
   def call
     check_validation
