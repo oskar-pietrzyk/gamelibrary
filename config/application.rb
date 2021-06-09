@@ -38,6 +38,7 @@ module Gamelibrary
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.autoload_paths += %W[#{config.root}/lib #{config.root}/app/validators/]
+    config.autoload_paths += %W[#{config.root}/lib #{config.root}/app/services/]
     config.api_only = true
   end
 end

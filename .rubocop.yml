@@ -38,6 +38,8 @@ Style/Documentation:
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - "spec/**/*"
+Lint/MissingSuper:
+  Enabled: false
 Naming/MethodParameterName:
   Exclude:
     - 'spec/**/*'

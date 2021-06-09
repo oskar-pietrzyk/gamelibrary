@@ -33,3 +33,15 @@ en:
   hello: "Hello world"
   user: 
     greeting: "Hi, %{user}"
+    computer:
+      search:
+        filter_by_value_error: 'The filter_by must be set to `name` or `uuid`'
+        query_error: 'Define the query you want to search for.'
+        filter_by_empty_error: 'Define filter_by to search'
+    game:
+      search:
+        query_error: 'Define the query you want to search for.'
+        filter_by_empty_error: 'Define filter_by to search'
+        filter_by_value_error: 'The filter_by must be set to `title` or `game_progress`'
+        filter_range_empty_error: 'Define filter_range to search by game_progress'
+        filter_range_value_error: 'The filter_range must be set to `less_or_equal`, `equal` or `more_or_equal`'
