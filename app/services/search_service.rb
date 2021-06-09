@@ -32,10 +32,10 @@ class SearchService
   end
 
   def results_filter_with_naming
-    resource.where("#{filter_by} like ?", query.to_s)
+    resource.where("#{filter_by} like ?", [query.to_s])
   end
 
   def results_filter_with_range
-    resource.where("#{filter_by} #{filter_range} ?", query.to_i)
+    resource.where("#{filter_by} #{filter_range} ?", [query.to_i])
   end
 end
