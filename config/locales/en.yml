@@ -32,7 +32,7 @@
 en:
   hello: "Hello world"
   user: 
-    greeting: "Hi, %{user}"
+    greeting: "Hi, %{username}"
     computer:
       search:
         filter_by_value_error: 'The filter_by must be set to `name` or `uuid`'
@@ -45,3 +45,14 @@ en:
         filter_by_value_error: 'The filter_by must be set to `title` or `game_progress`'
         filter_range_empty_error: 'Define filter_range to search by game_progress'
         filter_range_value_error: 'The filter_range must be set to `less_or_equal`, `equal` or `more_or_equal`'
+  
+  activerecord:
+    errors:
+      models:
+        computer_game:
+          attributes:
+            base:
+              computer_not_exist: 'Computer is needed to install games.'
+              user_is_not_owner_of_computer: 'User is not the owner of this computer.'
+              user_is_not_owner_of_game: 'User is not the owner of this game or the game does not exist.'
+              computer_already_used: 'Computer is already used.'

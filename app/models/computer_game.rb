@@ -13,6 +13,6 @@ class ComputerGame < ApplicationRecord
   private
 
   def computer_is_used
-    errors.add(:base, 'Computer is already used.') if ComputerGame.where(computer: computer).any?
+    errors.add(:base, :computer_alerady_used) if ComputerGame.where(computer: computer).any?
   end
 end

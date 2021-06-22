@@ -4,11 +4,9 @@ class UserDecorator < Draper::Decorator
   delegate_all
 
   def greeting
-    if first_name? && last_name?
-      I18n.t('user.greeting', user: "#{first_name} #{last_name}")
-    else
-      I18n.t('user.greeting', user: email)
-    end
+    return I18n.t('user.greeting', username: "#{first_name} #{last_name}") if first_name? && last_name?
+
+    I18n.t('user.greeting', username: email)
   end
 
   def installed_games

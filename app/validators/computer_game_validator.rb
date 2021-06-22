@@ -5,10 +5,10 @@ class ComputerGameValidator < ActiveModel::Validator
     @computer_game = computer_game
 
     if computer_game.computer.blank?
-      computer_game.errors.add(:base, 'Computer is needed to install games.')
+      computer_game.errors.add(:base, :computer_not_exist)
     else
-      computer_game.errors.add(:base, 'User is not the owner of this computer.') unless user_is_computer_owner?
-      computer_game.errors.add(:base, 'User is not the owner of this game or the game does not exist.') unless user_is_game_owner?
+      computer_game.errors.add(:base, :user_is_not_owner_of_computer) unless user_is_computer_owner?
+      computer_game.errors.add(:base, :user_is_not_owner_of_game) unless user_is_game_owner?
     end
   end
 
